@@ -47,7 +47,7 @@ from rasterio.enums import Resampling
 ## I seemed to need VRT at first, but not now
 ## gdal_translate /vsicurl/https://public.services.aad.gov.au/datasets/science/GEBCO_2019_GEOTIFF/GEBCO_2019.tif -of VRT earth.vrt
 gebco = rasterio.open('/vsicurl/https://public.services.aad.gov.au/datasets/science/GEBCO_2019_GEOTIFF/GEBCO_2019.tif')
-rgbim = rasterio.open('/perm_storage/home/gdalbuilder/rasterio/tests/data/RGB.byte.tif')
+rgbim = rasterio.open('/vsicurl/https://github.com/rasterio/rasterio/raw/master/tests/data/RGB2.byte.tif')
 def plot_ds(dataset, dimension = [1024, 512], cmap='viridis', bands = [1]): 
   # resample data to target shape (should use the warper here)
   data = dataset.read(bands,
