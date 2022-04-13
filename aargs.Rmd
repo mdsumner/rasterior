@@ -13,6 +13,46 @@ matplotlib$use("Agg", force = TRUE)
 
 ## Python and rasterio and numpy and matplotlib
 
+```{python warper}
+import affine
+import rasterio
+from rasterio.crs import CRS
+from rasterio.vrt import WarpedVRT
+import rioxarray
+url = 'https://public.services.aad.gov.au/datasets/science/GEBCO_2019_GEOTIFF/GEBCO_2019.tif'
+fil = 
+env = rasterio.Env(
+    GDAL_DISABLE_READDIR_ON_OPEN="EMPTY_DIR",
+    CPL_VSIL_CURL_USE_HEAD=False,
+    CPL_VSIL_CURL_ALLOWED_EXTENSIONS="TIF",
+)
+# Destination CRS is custom
+dst_crs = CRS.from_user_input('+proj=laea +lon_0=147 +lat_0=-42 +datum=WGS84')
+
+# These coordinates are in our projection (because zero is the centre)
+dst_bounds = -3e5, -3e5, 4e5, 4e5
+
+# Output image dimensions
+dst_height = 768
+dst_width = 512
+
+# Output image transform
+left, bottom, right, top = dst_bounds
+xres = (right - left) / dst_width
+yres = (top - bottom) / dst_height
+dst_transform = affine.Affine(xres, 0.0, left,
+                              0.0, -yres, top)
+
+import matplotlib.pyplot as plt
+ 
+with env:
+    with rasterio.open(url) as src:
+        with rasterio.vrt.WarpedVRT(src, width = dst_height, height = dst_height, crs=dst_crs, transform = dst_transform) as vrt:
+            rds = rioxarray.open_rasterio(vrt)
+            rds.sel(band=1).plot.imshow()
+            plt.scatter([0], [0])
+            
+```
 
 
 ```{python pyplot, eval=FALSE, include=FALSE}
@@ -36,7 +76,7 @@ plt.title('Density')
 
 ```
 
-```{python rasterio}
+```{python rasterio, eval = FALSE}
 import numpy
 import matplotlib.pyplot as plt
 
